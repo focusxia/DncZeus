@@ -1,199 +1,195 @@
 <template>
   <div>
     <Card>
-      <tables
-        ref="tables"
-        editable
-        searchable
-        :border="false"
-        size="small"
-        search-place="top"
-        v-model="stores.user.data"
-        :totalCount="stores.user.query.totalCount"
-        :columns="stores.user.columns"
-        @on-delete="handleDelete"
-        @on-edit="handleEdit"
-        @on-select="handleSelect"
-        @on-selection-change="handleSelectionChange"
-        @on-refresh="handleRefresh"
-        :row-class-name="rowClsRender"
-        @on-page-change="handlePageChanged"
-        @on-page-size-change="handlePageSizeChanged"
-        @on-assign="handleAssignRole"
-        @on-sort-change="handleSortChange"
-      >
+      <tables ref="tables"
+              editable
+              searchable
+              :border="false"
+              size="small"
+              search-place="top"
+              v-model="stores.user.data"
+              :totalCount="stores.user.query.totalCount"
+              :columns="stores.user.columns"
+              @on-delete="handleDelete"
+              @on-edit="handleEdit"
+              @on-select="handleSelect"
+              @on-selection-change="handleSelectionChange"
+              @on-refresh="handleRefresh"
+              :row-class-name="rowClsRender"
+              @on-page-change="handlePageChanged"
+              @on-page-size-change="handlePageSizeChanged"
+              @on-assign="handleAssignRole"
+              @on-sort-change="handleSortChange">
         <div slot="search">
           <section class="dnc-toolbar-wrap">
             <Row :gutter="16">
               <Col span="16">
-                <Form inline @submit.native.prevent>
-                  <FormItem>
-                    <Input
-                      type="text"
-                      search
-                      :clearable="true"
-                      v-model="stores.user.query.kw"
-                      placeholder="输入关键字搜索..."
-                      @on-search="handleSearchUser()"
-                    >
-                      <Select
-                        slot="prepend"
-                        v-model="stores.user.query.isDeleted"
-                        @on-change="handleSearchUser"
-                        placeholder="删除状态"
-                        style="width:60px;"
-                      >
-                        <Option
-                          v-for="item in stores.user.sources.isDeletedSources"
-                          :value="item.value"
-                          :key="item.value"
-                        >{{item.text}}</Option>
-                      </Select>
-                      <Select
-                        slot="prepend"
-                        v-model="stores.user.query.status"
-                        @on-change="handleSearchUser"
-                        placeholder="用户状态"
-                        style="width:60px;"
-                      >
-                        <Option
-                          v-for="item in stores.user.sources.statusSources"
-                          :value="item.value"
-                          :key="item.value"
-                        >{{item.text}}</Option>
-                      </Select>
-                    </Input>
-                  </FormItem>
-                </Form>
+              <Form inline
+                    @submit.native.prevent>
+                <FormItem>
+                  <Input type="text"
+                         search
+                         :clearable="true"
+                         v-model="stores.user.query.kw"
+                         placeholder="输入关键字搜索..."
+                         @on-search="handleSearchUser()">
+                  <Select slot="prepend"
+                          v-model="stores.user.query.isDeleted"
+                          @on-change="handleSearchUser"
+                          placeholder="删除状态"
+                          style="width:60px;">
+                    <Option v-for="item in stores.user.sources.isDeletedSources"
+                            :value="item.value"
+                            :key="item.value">{{item.text}}</Option>
+                  </Select>
+                  <Select slot="prepend"
+                          v-model="stores.user.query.status"
+                          @on-change="handleSearchUser"
+                          placeholder="用户状态"
+                          style="width:60px;">
+                    <Option v-for="item in stores.user.sources.statusSources"
+                            :value="item.value"
+                            :key="item.value">{{item.text}}</Option>
+                  </Select>
+                  </Input>
+                </FormItem>
+              </Form>
               </Col>
-              <Col span="8" class="dnc-toolbar-btns">
-                <ButtonGroup class="mr3">
-                  <Button
-                    class="txt-danger"
-                    icon="md-trash"
-                    title="删除"
-                    @click="handleBatchCommand('delete')"
-                  ></Button>
-                  <Button
-                    class="txt-success"
-                    icon="md-redo"
-                    title="恢复"
-                    @click="handleBatchCommand('recover')"
-                  ></Button>
-                  <Button
-                    class="txt-danger"
-                    icon="md-hand"
-                    title="禁用"
-                    @click="handleBatchCommand('forbidden')"
-                  ></Button>
-                  <Button
-                    class="txt-success"
-                    icon="md-checkmark"
-                    title="启用"
-                    @click="handleBatchCommand('normal')"
-                  ></Button>
-                  <Button icon="md-refresh" title="刷新" @click="handleRefresh"></Button>
-                </ButtonGroup>
-                <Button
-                  v-can="'create'"
-                  icon="md-create"
-                  type="primary"
-                  @click="handleShowCreateWindow"
-                  title="新增用户"
-                >新增用户</Button>
+              <Col span="8"
+                   class="dnc-toolbar-btns">
+              <ButtonGroup class="mr3">
+                <Button class="txt-danger"
+                        icon="md-trash"
+                        title="删除"
+                        @click="handleBatchCommand('delete')"></Button>
+                <Button class="txt-success"
+                        icon="md-redo"
+                        title="恢复"
+                        @click="handleBatchCommand('recover')"></Button>
+                <Button class="txt-danger"
+                        icon="md-hand"
+                        title="禁用"
+                        @click="handleBatchCommand('forbidden')"></Button>
+                <Button class="txt-success"
+                        icon="md-checkmark"
+                        title="启用"
+                        @click="handleBatchCommand('normal')"></Button>
+                <Button icon="md-refresh"
+                        title="刷新"
+                        @click="handleRefresh"></Button>
+              </ButtonGroup>
+              <Button v-can="'create'"
+                      icon="md-create"
+                      type="primary"
+                      @click="handleShowCreateWindow"
+                      title="新增用户">新增用户</Button>
               </Col>
             </Row>
           </section>
         </div>
       </tables>
     </Card>
-    <Drawer
-      :title="formTitle"
-      v-model="formModel.opened"
-      width="600"
-      :mask-closable="false"
-      :mask="true"
-      :styles="styles"
-    >
-      <Form :model="formModel.fields" ref="formUser" :rules="formModel.rules" label-position="top">
+    <Drawer :title="formTitle"
+            v-model="formModel.opened"
+            width="600"
+            :mask-closable="false"
+            :mask="true"
+            :styles="styles">
+      <Form :model="formModel.fields"
+            ref="formUser"
+            :rules="formModel.rules"
+            label-position="top">
         <Row :gutter="16">
           <Col span="12">
-            <FormItem label="登录名" prop="loginName">
-              <Input v-model="formModel.fields.loginName" placeholder="请输入登录名"/>
-            </FormItem>
+          <FormItem label="登录名"
+                    prop="loginName">
+            <Input v-model="formModel.fields.loginName"
+                   placeholder="请输入登录名" />
+          </FormItem>
           </Col>
           <Col span="12">
-            <FormItem label="显示名" prop="displayName">
-              <Input v-model="formModel.fields.displayName" placeholder="请输入显示名"/>
-            </FormItem>
+          <FormItem label="显示名"
+                    prop="displayName">
+            <Input v-model="formModel.fields.displayName"
+                   placeholder="请输入显示名" />
+          </FormItem>
           </Col>
         </Row>
         <Row :gutter="16">
           <Col span="12">
-            <FormItem label="密码" prop="password">
-              <Input type="password" v-model="formModel.fields.password" placeholder="请输入登录密码"/>
-            </FormItem>
+          <FormItem label="密码"
+                    prop="password">
+            <Input type="password"
+                   v-model="formModel.fields.password"
+                   placeholder="请输入登录密码" />
+          </FormItem>
           </Col>
           <Col span="12">
-            <FormItem label="用户类型">
-              <Select v-model="formModel.fields.userType">
-                <Option
-                  v-for="item in stores.user.sources.userTypes"
-                  :value="item.value"
-                  :key="item.value"
-                >{{ item.text }}</Option>
-              </Select>
-            </FormItem>
+          <FormItem label="用户类型">
+            <Select v-model="formModel.fields.userType">
+              <Option v-for="item in stores.user.sources.userTypes"
+                      :value="item.value"
+                      :key="item.value">{{ item.text }}</Option>
+            </Select>
+          </FormItem>
           </Col>
         </Row>
         <Row :gutter="16">
           <Col span="12">
-            <FormItem label="用户状态" label-position="left">
-              <!-- <RadioGroup v-model="formModel.fields.status" type="button">
+          <FormItem label="用户状态"
+                    label-position="left">
+            <!-- <RadioGroup v-model="formModel.fields.status" type="button">
                               <Radio v-for="item in stores.user.sources.statusFormSources" :label="item.text" :key="item.value"></Radio>
               </RadioGroup>-->
-              <i-switch
-                size="large"
-                v-model="formModel.fields.status"
-                :true-value="1"
-                :false-value="0"
-              >
-                <span slot="open">正常</span>
-                <span slot="close">禁用</span>
-              </i-switch>
-            </FormItem>
+            <i-switch size="large"
+                      v-model="formModel.fields.status"
+                      :true-value="1"
+                      :false-value="0">
+              <span slot="open">正常</span>
+              <span slot="close">禁用</span>
+            </i-switch>
+          </FormItem>
           </Col>
         </Row>
-        <FormItem label="备注" label-position="top">
-          <Input type="textarea" v-model="formModel.fields.desc" :rows="4" placeholder="用户备注信息"/>
+        <FormItem label="备注"
+                  label-position="top">
+          <Input type="textarea"
+                 v-model="formModel.fields.desc"
+                 :rows="4"
+                 placeholder="用户备注信息" />
         </FormItem>
       </Form>
       <div class="demo-drawer-footer">
-        <Button icon="md-checkmark-circle" type="primary" @click="handleSubmitUser">保 存</Button>
-        <Button style="margin-left: 8px" icon="md-close" @click="formModel.opened = false">取 消</Button>
+        <Button icon="md-checkmark-circle"
+                type="primary"
+                @click="handleSubmitUser">保 存</Button>
+        <Button style="margin-left: 8px"
+                icon="md-close"
+                @click="formModel.opened = false">取 消</Button>
       </div>
     </Drawer>
-    <Drawer
-      title="用户角色分配"
-      v-model="formAssignRole.opened"
-      width="500"
-      :mask-closable="true"
-      :mask="true"
-    >
+    <Drawer title="用户角色分配"
+            v-model="formAssignRole.opened"
+            width="500"
+            :mask-closable="true"
+            :mask="true">
       <Form>
         <FormItem>
-          <Transfer
-            :data="formAssignRole.roles"
-            :target-keys="formAssignRole.ownedRoles"
-            :render-format="renderOwnedRoles"
-            :titles="['未获得的角色','已获得的角色']"
-            @on-change="handleChangeOwnedRolesChanged"
-          ></Transfer>
+          <Transfer :data="formAssignRole.roles"
+                    :target-keys="formAssignRole.ownedRoles"
+                    :render-format="renderOwnedRoles"
+                    :titles="['未获得的角色','已获得的角色']"
+                    @on-change="handleChangeOwnedRolesChanged"></Transfer>
         </FormItem>
       </Form>
-      <div class="demo-drawer-footer" style="margin-top:15px;">
-        <Button icon="md-checkmark-circle" type="primary" @click="handleSaveUserRoles">保 存</Button>
-        <Button style="margin-left: 8px" icon="md-close" @click="formAssignRole.opened = false">取 消</Button>
+      <div class="demo-drawer-footer"
+           style="margin-top:15px;">
+        <Button icon="md-checkmark-circle"
+                type="primary"
+                @click="handleSaveUserRoles">保 存</Button>
+        <Button style="margin-left: 8px"
+                icon="md-close"
+                @click="formAssignRole.opened = false">取 消</Button>
       </div>
     </Drawer>
   </div>
@@ -216,7 +212,7 @@ export default {
   components: {
     Tables
   },
-  data() {
+  data () {
     return {
       commands: {
         delete: { name: "delete", title: "删除" },
@@ -273,7 +269,7 @@ export default {
             sort: [
               {
                 direct: "DESC",
-                field: "Id"
+                field: "Guid"
               }
             ]
           },
@@ -525,7 +521,7 @@ export default {
     };
   },
   computed: {
-    formTitle() {
+    formTitle () {
       if (this.formModel.mode === "create") {
         return "创建用户";
       }
@@ -534,51 +530,51 @@ export default {
       }
       return "";
     },
-    selectedRows() {
+    selectedRows () {
       return this.formModel.selection;
     },
-    selectedRowsId() {
+    selectedRowsId () {
       return this.formModel.selection.map(x => x.guid);
     }
   },
   methods: {
-    loadUserList() {
+    loadUserList () {
       getUserList(this.stores.user.query).then(res => {
         this.stores.user.data = res.data.data;
         this.stores.user.query.totalCount = res.data.totalCount;
       });
     },
-    handleOpenFormWindow() {
+    handleOpenFormWindow () {
       this.formModel.opened = true;
     },
-    handleCloseFormWindow() {
+    handleCloseFormWindow () {
       this.formModel.opened = false;
     },
-    handleSwitchFormModeToCreate() {
+    handleSwitchFormModeToCreate () {
       this.formModel.mode = "create";
     },
-    handleSwitchFormModeToEdit() {
+    handleSwitchFormModeToEdit () {
       this.formModel.mode = "edit";
       this.handleOpenFormWindow();
     },
-    handleEdit(params) {
+    handleEdit (params) {
       this.handleSwitchFormModeToEdit();
       this.handleResetFormUser();
       this.doLoadUser(params.row.guid);
     },
-    handleSelect(selection, row) {},
-    handleSelectionChange(selection) {
+    handleSelect (selection, row) { },
+    handleSelectionChange (selection) {
       this.formModel.selection = selection;
     },
-    handleRefresh() {
+    handleRefresh () {
       this.loadUserList();
     },
-    handleShowCreateWindow() {
+    handleShowCreateWindow () {
       this.handleSwitchFormModeToCreate();
       this.handleOpenFormWindow();
       this.handleResetFormUser();
     },
-    handleSubmitUser() {
+    handleSubmitUser () {
       let valid = this.validateUserForm();
       if (valid) {
         if (this.formModel.mode === "create") {
@@ -589,10 +585,10 @@ export default {
         }
       }
     },
-    handleResetFormUser() {
+    handleResetFormUser () {
       this.$refs["formUser"].resetFields();
     },
-    doCreateUser() {
+    doCreateUser () {
       createUser(this.formModel.fields).then(res => {
         if (res.data.code === 200) {
           this.$Message.success(res.data.message);
@@ -603,7 +599,7 @@ export default {
         }
       });
     },
-    doEditUser() {
+    doEditUser () {
       editUser(this.formModel.fields).then(res => {
         if (res.data.code === 200) {
           this.$Message.success(res.data.message);
@@ -614,7 +610,7 @@ export default {
         }
       });
     },
-    validateUserForm() {
+    validateUserForm () {
       let _valid = false;
       this.$refs["formUser"].validate(valid => {
         if (!valid) {
@@ -625,15 +621,15 @@ export default {
       });
       return _valid;
     },
-    doLoadUser(guid) {
+    doLoadUser (guid) {
       loadUser({ guid: guid }).then(res => {
         this.formModel.fields = res.data.data;
       });
     },
-    handleDelete(params) {
+    handleDelete (params) {
       this.doDelete(params.row.guid);
     },
-    doDelete(ids) {
+    doDelete (ids) {
       if (!ids) {
         this.$Message.warning("请选择至少一条数据");
         return;
@@ -648,7 +644,7 @@ export default {
         }
       });
     },
-    handleBatchCommand(command) {
+    handleBatchCommand (command) {
       if (!this.selectedRowsId || this.selectedRowsId.length <= 0) {
         this.$Message.warning("请选择至少一条数据");
         return;
@@ -665,7 +661,7 @@ export default {
         }
       });
     },
-    doBatchCommand(command) {
+    doBatchCommand (command) {
       batchCommand({
         command: command,
         ids: this.selectedRowsId.join(",")
@@ -680,30 +676,30 @@ export default {
         this.$Modal.remove();
       });
     },
-    handleSearchUser() {
+    handleSearchUser () {
       this.loadUserList();
     },
-    rowClsRender(row, index) {
+    rowClsRender (row, index) {
       if (row.isDeleted) {
         return "table-row-disabled";
       }
       return "";
     },
-    handlePageChanged(page) {
+    handlePageChanged (page) {
       this.stores.user.query.currentPage = page;
       this.loadUserList();
     },
-    handlePageSizeChanged(pageSize) {
+    handlePageSizeChanged (pageSize) {
       this.stores.user.query.pageSize = pageSize;
       this.loadUserList();
     },
-    renderOwnedRoles(item) {
+    renderOwnedRoles (item) {
       return item.label;
     },
-    handleChangeOwnedRolesChanged(newTargetKeys, direction, moveKeys) {
+    handleChangeOwnedRolesChanged (newTargetKeys, direction, moveKeys) {
       this.formAssignRole.ownedRoles = newTargetKeys;
     },
-    loadUserRoleList(guid) {
+    loadUserRoleList (guid) {
       this.formAssignRole.roles = [];
       this.formAssignRole.ownedRoles = [];
       loadRoleListByUserGuid(guid).then(res => {
@@ -712,12 +708,12 @@ export default {
         this.formAssignRole.ownedRoles = result.assignedRoles;
       });
     },
-    handleAssignRole(params) {
+    handleAssignRole (params) {
       this.formAssignRole.opened = true;
       this.formAssignRole.userGuid = params.row.guid;
       this.loadUserRoleList(params.row.guid);
     },
-    handleSaveUserRoles() {
+    handleSaveUserRoles () {
       var data = {
         userGuid: this.formAssignRole.userGuid,
         assignedRoles: this.formAssignRole.ownedRoles
@@ -731,13 +727,13 @@ export default {
         }
       });
     },
-    handleSortChange(sort) {
+    handleSortChange (sort) {
       this.stores.user.query.sort[0]["direct"] = sort.order;
       this.stores.user.query.sort[0]["field"] = sort.key;
       this.loadUserList();
     }
   },
-  mounted() {
+  mounted () {
     this.loadUserList();
   }
 };
